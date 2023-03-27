@@ -118,7 +118,7 @@ def pairwiseR_func(x):
     ax.plot(df_change, alpha=0.7)
 
     ax.set_ylabel('Pearson\'s R')
-    ax.set_title(f'21 day rolling correlation with {index}')
+    ax.set_title(f'{window_size} day rolling correlation with {index}')
     ax.tick_params(axis='x', which='major', labelsize=7, labelrotation=45)
     ax.tick_params(axis='y', which='major', labelsize=7, labelrotation=0)
     ax.axhline(mean_R, color='blue', alpha=0.7)
