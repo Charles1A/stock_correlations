@@ -2,7 +2,6 @@ yfinance
 scipy
 pandas
 numpy
-streamlit
 matplotlib
 seaborn
 datetime
