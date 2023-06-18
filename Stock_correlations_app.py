@@ -10,22 +10,51 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime, timedelta, date
 import time
+import re
 
 st.set_page_config(layout='wide', initial_sidebar_state='expanded')
+
+hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            footer:after {
+            content:'Made by Charles Ashton, M.S.'; 
+            visibility: visible;
+            display: block;
+            position: relative;
+            #background-color: red;
+            padding: 5px;
+            top: 2px;
+        }
+            </style>
+            """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
 
 # # --- # Sidebar elements
 
 st.sidebar.subheader('Data retrieval parameters')
 
-tickers = st.sidebar.text_input(label = 'Enter two or more tickers, separated with a space, e.g., aapl tsla')
+
+tickers = st.sidebar.text_input(label = 'Enter two or more tickers, separated with a space, e.g., \'aapl TSLA Msft\' ')
+
+if tickers:
+    
+    x = re.search(r'[^a-zA-Z$]|[ ][ ]', tickers)
+
+    if x:
+
+        st.sidebar.warning('Enter only valid tickers separated by a single space', icon="⚠️")
+
+
 tickers = tickers.upper()
 ticker_list = tickers.split(" ")
 
 indexlist = ('', '^IXIC', '^DJI', '^RUT')
 
-index = st.sidebar.selectbox(label='Select a benchmark index for correlation (IXIC = Nasdaq Composite; DJI = Dow Jones Industrial Average; RUT = Russell 2000)',
+index = st.sidebar.selectbox(label='Select a benchmark index for correlation: \n (IXIC = Nasdaq Composite; DJI = Dow Jones Industrial Average; RUT = Russell 2000)',
     options = indexlist,
-    format_func=lambda x: 'Select an appropriate index' if x == '' else x)
+    format_func=lambda x: 'Select appropriate index' if x == '' else x)
 
 N = st.sidebar.slider(label = 'Select number of calendar days to include in look-back period', min_value=30,
                       max_value=360, value=90, step=30)
@@ -37,11 +66,8 @@ today = date.today().strftime('%Y-%m-%d')
 start_disp = date_N_days_ago.strftime('%d %B, %Y')
 today_disp = date.today().strftime('%d %B, %Y')
 
-st.sidebar.write(f'The selected look-back period spans {start_disp} to {today_disp}.')
+st.sidebar.write(f'The selected look-back period spans \n {start_disp} to {today_disp}.')
 
-st.sidebar.markdown('''
-by Charles Ashton, M.S.
-''')
 
 # # --- # Function definitions
 
@@ -118,7 +144,7 @@ def pairwiseR_func(x):
     ax.plot(df_change, alpha=0.7)
 
     ax.set_ylabel('Pearson\'s R')
-    ax.set_title(f'{window_size} day rolling correlation with {index}')
+    ax.set_title(f'21 day rolling correlation with {index}')
     ax.tick_params(axis='x', which='major', labelsize=7, labelrotation=45)
     ax.tick_params(axis='y', which='major', labelsize=7, labelrotation=0)
     ax.axhline(mean_R, color='blue', alpha=0.7)
@@ -157,6 +183,9 @@ with col3:
 
     if len(ticker_list) >= 2 and index != '':
 
+        with st.spinner('Working...'):
+            time.sleep(2)
+
         stock_data()
 
         correlogram_func(stock_data())
@@ -165,12 +194,14 @@ with col4:
 
     if len(ticker_list) >= 2 and index != '':
 
+        with st.spinner('Working...'):
+            time.sleep(2)
+
         pairwiseR_func(stock_data())
 
         st.write('Note: horizontal blue line represents mean R value across indicated dates')
 
-with st.spinner('Working...'):
-    time.sleep(1)
+
 
 
 
