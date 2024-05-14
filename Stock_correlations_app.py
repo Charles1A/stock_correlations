@@ -38,14 +38,6 @@ st.sidebar.subheader('Data retrieval parameters')
 
 tickers = st.sidebar.text_input(label = 'Enter two or more tickers, separated with a space, e.g., \'aapl TSLA Msft\' ')
 
-if tickers:
-    
-    x = re.search(r'[^a-zA-Z$]|[ ][ ]', tickers)
-
-    if x:
-
-        st.sidebar.warning('Enter only valid tickers separated by a single space', icon="⚠️")
-
 
 tickers = tickers.upper()
 ticker_list = tickers.split(" ")
@@ -88,7 +80,7 @@ def day_func(x):
 
     trading_days = len(x.index)
 
-    return st.write(f'Pearson\'s R correlation matrix for the {trading_days} market trading days between {start_disp} and {today_disp}.')
+    return st.write(f'Pearson\'s R correlation matrix for the {trading_days} trading days within the look-back period.')
 
 
 def correlogram_func(x):
@@ -144,7 +136,7 @@ def pairwiseR_func(x):
     ax.plot(df_change, alpha=0.7)
 
     ax.set_ylabel('Pearson\'s R')
-    ax.set_title(f'21 day rolling correlation with {index}')
+    ax.set_title(f'Rolling correlation with {index}')
     ax.tick_params(axis='x', which='major', labelsize=7, labelrotation=45)
     ax.tick_params(axis='y', which='major', labelsize=7, labelrotation=0)
     ax.axhline(mean_R, color='blue', alpha=0.7)
@@ -172,7 +164,7 @@ with col2:
 
     if len(ticker_list) >= 2 and index != '':
 
-        window_size = st.slider('Choose number of trading days for rolling-window correlation (Pearson\'s R)', 
+        window_size = st.slider('Choose number of trading days for pairwise rolling-window correlation (Pearson\'s R)', 
             min_value=7, max_value=28, value=21, step=7)
 
     else: st.write('')
